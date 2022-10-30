@@ -1,0 +1,164 @@
+<%- include("partials/header"); -%>
+
+<body>
+
+    <section class="mb-5" style="background-color: #eee; display: flex;">
+    
+        <div style="flex-grow: 4;">
+            <% if(user === "seller"){ %>
+                <div class="mx-2 my-4 px-4 py-2 text-center">
+                    <!-- instead of passing entire seller or buyer object we can also send only the name value  -->
+                    <h1>Welcome <%= seller.name %> !!!</h1>
+                    <p>We hope you enjoy your Selling.</p>
+                </div>
+            <% }else{ %>
+                <!-- also we can make a search section from where products with similar description and title could be found -->
+                <div class="mx-2 my-4 px-4 py-2 text-center">
+                    <h1>Welcome <%= buyer.name %> !!!</h1>
+                    <p>We hope you enjoy your Shopping.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- make a drop down menu for profile and logging out and also make a complete the profile section -->
+        <div style="flex-grow: 1;" class="dropdown m-auto mx-3">
+            <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Profile
+            </a>
+        
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <!-- <a class="dropdown-item" href="#">Action</a> -->
+            <a class="dropdown-item" href="/profile/<%= user %>/<%= userId %>">My Profile</a>
+            <a class="dropdown-item" href="/login">LOG OUT</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="mb-5" style="background-color: #eee;">
+
+        <div class="container pt-4 px-3 d-flex w-75">
+            <% if(user === "seller"){ %>
+                <% if(seller.productsDisplayed.length === 0){ %>
+                    <p class="px-4 m-auto"><strong>Opps!!! You Currently do not have any Products in display</strong></p>
+                    <a href="/product/<%= userId %>"><button class="btn btn-success">Add Products</button></a>
+                <% }else{ %>
+                    <p class="px-4 m-auto"><strong >Below are your Products in display</strong></p>
+                    <a href="/product/<%= userId %>" class="px-4 mx-4"><button class="btn btn-success">Add More Products</button></a>
+                <% } %>
+            <% } %>
+        </div>
+
+        <% products.forEach(product => { %>
+        <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-xl-10">
+            <div class="card shadow-0 border rounded-3">
+                
+                    
+                    <div class="card-body my-0">
+
+                        <span class="badge badge-danger <%= product.sold %>">SOLD</span>
+
+                    <div class="row">
+                        <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                        <div class="bg-image hover-zoom ripple rounded ripple-surface">
+
+                            <img src="data:image/<%=product.img.contentType%>;base64,
+                                <%= product.img.data.toString('base64') %>"
+                            class="w-100" />
+                            <a href="#!">
+                            <div class="hover-overlay">
+                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                            </div>
+                            </a>
+
+                        </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xl-6 mt-2">
+                            
+                        <h5><%= product.name %></h5>
+                        <!-- <div class="d-flex flex-row">
+                            <div class="text-danger mb-1 me-2">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            </div>
+                            <span>310</span>
+                        </div>
+                        <div class="mt-1 mb-0 text-muted small">
+                            <span>100% cotton</span>
+                            <span class="text-primary"> • </span>
+                            <span>Light weight</span>
+                            <span class="text-primary"> • </span>
+                            <span>Best finish<br /></span>
+                        </div>
+                        <div class="mb-2 text-muted small">
+                            <span>Unique design</span>
+                            <span class="text-primary"> • </span>
+                            <span>For men</span>
+                            <span class="text-primary"> • </span>
+                            <span>Casual<br /></span>
+                        </div> -->
+
+                        <div>
+
+                            <% ((product.auctionTime).toString()).split(" ").every(element => { %>
+                                <% if (element[0] !== "G"){ %>
+                                    <span><strong><%= element %></strong></span>
+                                    <% return true %>
+                                <% }else{ %>
+                                    <% return false %>
+                                <% } %>
+                            <% }); %>
+                            <!-- <span><%= product.auctionTime %></span> -->
+                        </div>
+
+                        <p class="text-truncate mb-4 mb-md-0">
+                            <%= product.description %>
+                        </p>
+                        </div>
+                        <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start my-3">
+                        <div class="d-flex flex-row align-items-center mb-1">
+                            <h4 class="mb-1 me-1"> &#8377; <%= product.price %></h4>
+                            <!-- <span class="text-danger"><s>$20.99</s></span> -->
+                        </div>
+
+                        <h6 class="text-success">Free shipping</h6>
+
+                        <div class="d-flex flex-column mt-4">
+                            <a href="/productDetails/<%= user %>/<%= product.id %>">
+                                <button class="btn btn-primary w-100 mt-4" type="button">
+                                    Details
+                                </button>
+                            </a>
+                            <% if(user === "seller"){ %>
+
+                                <form action="/home/<%= user %>/<%= seller.id %>" method="post">
+                                    <input type="hidden" name="productId" value="<%= product.id %>">
+                                    <button type="submit" class="btn btn-danger my-2 w-100 ">Delete Product</button>
+                                </form>
+
+                            <% } %>
+
+                            <!-- wishlist concept could also be used -->
+                            <!-- <button class="btn btn-outline-primary btn-sm mt-2" type="button">
+                            Add to wishlist
+                            </button> -->
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+    </section>
+
+<%- include("partials/footer"); -%>

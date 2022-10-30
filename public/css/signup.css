@@ -1,0 +1,21 @@
+.gradient{
+    background: linear-gradient(to top right, rgb(0, 160, 255,1) 40% , rgb(225, 225, 225,0.5) 40%),
+    linear-gradient(to bottom right, white 70%, green 70%);
+
+
+}
+
+.true{ 
+    display: inline-block;
+    padding: 10px 30px;
+    margin-left: 95%;
+    position: relative;
+    bottom: 30px
+}
+.false{
+    display: none;
+}
+
+/* .showAlert{
+
+} */

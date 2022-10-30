@@ -1,0 +1,104 @@
+<%- include("partials/header"); -%>
+
+<body class="gradient">
+
+  <% if(alertValue === "showAlert"){ %> 
+    <!-- change to animated alert for 5 sec alert warning -->
+    <div class="alert alert-warning alert-dismissible fade show alert-danger text-center" role="alert">
+      <strong>Holy guacamole!</strong> You should check in on some of those fields below. User with same Username or Email already Present
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% } %>
+
+  <section class="vh-100">
+
+    <div class="mask d-flex align-items-center h-100 gradient-custom-3 py-5 mb-5">
+      <div class="container h-100">
+        <div
+          class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+            <div class="card" style="border-radius: 15px">
+              <div class="card-body p-5">
+                <h2 class="text-uppercase text-center mb-5">
+                  Create an account
+                </h2>
+                <form action="/signup" method="post">
+                  <select name="selectAccount" class="form-select form-select-lg mb-4 container-fluid py-2" aria-label=".form-select-lg example">
+                    <option selected value="seller">Create a Seller Account</option>
+                    <option value="buyer">Create a Buyer Account</option>
+                  </select>
+
+                  <div class="form-outline mb-4">
+                    <input
+                      type="text"
+                      name="userName"
+                      id="form3Example1cg"
+                      class="form-control form-control-lg"
+                      placeholder="Your Name"
+                      autocomplete="off"
+                      required/>
+                  </div>
+                  <div class="form-outline mb-4">
+                    <input
+                      type="email"
+                      name="email"
+                      id="form3Example3cg"
+                      class="form-control form-control-lg"
+                      placeholder="Your Email"
+                      autocomplete="off"
+                      required/>
+                  </div>
+                  <div class="form-outline mb-4">
+                    <input
+                      type="password"
+                      name="pass"
+                      id="form3Example4cg"
+                      class="form-control form-control-lg"
+                      placeholder="Password"
+                      autocomplete="off"
+                      required/>
+                  </div>
+                  <!-- <div class="form-outline mb-4">
+                    <input
+                      type="password"
+                      name="passCheck"
+                      id="form3Example4cdg"
+                      class="form-control form-control-lg"
+                      placeholder="Repeat your password"
+                      autocomplete="off"
+                      required/>
+                  </div> -->
+                  <div class="d-flex justify-content-center">
+                    <button
+                        onclick="checkPassword()"
+                        type="submit"
+                        class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                        Register
+                    </button>
+                  </div>
+                  <p class="text-center text-muted mt-5 mb-0">
+                    Have already an account?
+                    <a href="/login" class="fw-bold text-body"><u>Login here</u></a>
+                  </p>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- <script>
+      function checkPassword(){
+        const pass = document.getElementById("form3Example4cg");
+        const passCheck = document.getElementById("form3Example4cdg");
+        if (pass != passCheck) {
+            alert("Check Your PassWord Again!!!");
+        }
+      }
+  </script> -->
+
+<%- include("partials/footer"); -%>

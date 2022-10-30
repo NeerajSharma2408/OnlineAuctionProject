@@ -1,0 +1,77 @@
+<%- include("partials/header"); -%>
+
+<body class="gradient">
+
+  <% if(alertValue === "showAlert"){ %> 
+    <!-- change to animated alert for 5 sec alert warning -->
+    <div class="alert alert-warning alert-dismissible fade show alert-danger text-center" role="alert">
+      <strong>Holy guacamole!</strong> You should check in on some of those fields below. User with provided Info Cant be Found.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% } %>
+
+  <section class="vh-100 gradient-custom vh-100 bg-image">
+
+      <div class="container py-5 h-50 mb-5">
+        <div class="row d-flex justify-content-center align-items-center h-50">
+          <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card bg-dark text-white" style="border-radius: 1rem;">
+              <div class="card-body p-5 text-center">
+    
+                <form action="/login" method="post">
+
+                  <div class="mb-md-5 mt-md-4 pb-2">
+    
+                      <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                      <p class="text-white-50 mb-5">Please enter your login and password!</p>
+
+                      <select name="AccountType" class="form-select form-select-lg mb-4 container-fluid py-2 form-control-lg" aria-label=".form-select-lg example">
+                        <option selected value="seller">Log Into Seller Account</option>
+                        <option value="buyer">Log Into Buyer Account</option>
+                      </select>
+        
+                      <div class="form-outline form-white mb-4">
+                        <input 
+                        type="text"
+                        name="userName"
+                        id="typeEmailX"
+                        class="form-control form-control-lg"
+                        placeholder="Your User Name"
+                        autocomplete="off"
+                        required/>
+                      </div>
+        
+                      <div class="form-outline form-white mb-4">
+                        <input 
+                        type="password" 
+                        name="pass"
+                        id="typePasswordX" 
+                        class="form-control form-control-lg" 
+                        placeholder="Password" 
+                        autocomplete="off"
+                        required/>
+                      </div>
+        
+                      <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
+        
+                      <button class="btn btn-outline-light btn-lg px-5 mb-0" type="submit">Login</button>
+        
+                    </div>
+
+                </form>
+    
+                <div>
+                  <p class="my-0">Don't have an account? <a href="/signup" class="text-white-50 fw-bold">Sign Up</a>
+                  </p>
+                </div>
+    
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+<%- include("partials/footer"); -%>
