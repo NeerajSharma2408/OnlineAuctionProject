@@ -46,119 +46,167 @@
                     <p class="px-4 m-auto"><strong >Below are your Products in display</strong></p>
                     <a href="/product/<%= userId %>" class="px-4 mx-4"><button class="btn btn-success">Add More Products</button></a>
                 <% } %>
+            <% }else{ %>
+                <% if(products.length === 0){ %>
+                    <p class="px-4 m-auto"><strong>Opps!!! There are no Products currently in display</strong></p>
+                <% } %>
             <% } %>
         </div>
 
+        
         <% products.forEach(product => { %>
-        <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-12 col-xl-10">
-            <div class="card shadow-0 border rounded-3">
-                
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-14 col-xl-10">
+                        <div class="card shadow-0 border rounded-3">
                     
-                    <div class="card-body my-0">
+                        
+                            <div class="card-body my-0">
 
-                        <span class="badge badge-danger <%= product.sold %>">SOLD</span>
+                                <span class="badge badge-danger <%= product.sold %>">SOLD</span>
+    
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                        <div class="bg-image hover-zoom ripple rounded ripple-surface">
+    
+                                            <img src="data:image/<%=product.img.contentType%>;base64,
+                                                <%= product.img.data.toString('base64') %>"
+                                            class="w-100" />
+                                            <a href="#!">
+                                                <div class="hover-overlay">
+                                                    <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
 
-                    <div class="row">
-                        <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
-                        <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                    <div class="col-md-6 col-lg-6 col-xl-6 mt-2">
 
-                            <img src="data:image/<%=product.img.contentType%>;base64,
-                                <%= product.img.data.toString('base64') %>"
-                            class="w-100" />
-                            <a href="#!">
-                            <div class="hover-overlay">
-                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                        <h5><%= product.name %></h5>
+                                        <!-- <div class="d-flex flex-row">
+                                            <div class="text-danger mb-1 me-2">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            </div>
+                                            <span>310</span>
+                                        </div>
+                                        <div class="mt-1 mb-0 text-muted small">
+                                            <span>100% cotton</span>
+                                            <span class="text-primary"> • </span>
+                                            <span>Light weight</span>
+                                            <span class="text-primary"> • </span>
+                                            <span>Best finish<br /></span>
+                                        </div>
+                                        <div class="mb-2 text-muted small">
+                                            <span>Unique design</span>
+                                            <span class="text-primary"> • </span>
+                                            <span>For men</span>
+                                            <span class="text-primary"> • </span>
+                                            <span>Casual<br /></span>
+                                        </div> -->
+                                    
+                                        <div>
+                                            <span><strong>
+                                                Auction Date: 
+                                            </strong></span>
+                                        
+                                            <% ((product.auctionTime).toString()).split(" ").every(element => { %>
+                                                <% if (element[0] !== "G"){ %>
+                                                    <span><%= element %></span>
+                                                    <% return true %>
+                                                <% }else{ %>
+                                                    <% return false %>
+                                                <% } %>
+                                            <% }); %>
+                                        </div>
+
+                                        <br>
+
+                                        <div>
+                                            <div class="d-none">
+                                                <input type="hidden" class="auctionDate" value="<%= product.auctionTime - Date.now() %>">
+                                            </div>
+                                                <span><strong>Time Left:</strong>
+                                                    <span class="D"><strong></strong></span><span>D :</span>
+                                                    <span class="H"><strong></strong></span><span>H :</span>
+                                                    <span class="M"><strong></strong></span><span>M :</span>
+                                                    <span class="S"><strong></strong></span><span>S</span>
+                                                </span> 
+                                                
+                                        </div>
+
+                                        <br>
+
+                                    <p class="text-truncate mb-4 mb-md-0">
+                                        <%= product.description %>
+                                    </p>
+                                </div>
+                                <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start my-3">
+                                    <div class="d-flex flex-row align-items-center mb-1">
+                                        <h4 class="mb-1 me-1"> &#8377; <%= product.price %></h4>
+                                        <!-- <span class="text-danger"><s>$20.99</s></span> -->
+                                    </div>
+
+                                    <h6 class="text-success">Free shipping</h6>
+
+                                    <div class="d-flex flex-column mt-4">
+                                        <a href="/productDetails/<%= user %>/<%= userId %>/<%= product.id %>">
+                                            <button class="btn btn-primary w-100 mt-4" type="button">
+                                                Details
+                                            </button>
+                                        </a>
+                                        <% if(user === "seller"){ %>
+
+                                            <form action="/home/<%= user %>/<%= seller.id %>" method="post">
+                                                <input type="hidden" name="productId" value="<%= product.id %>">
+                                                <button type="submit" class="btn btn-danger my-2 w-100 ">Delete Product</button>
+                                            </form>
+
+                                        <% } %>
+
+                                        <!-- wishlist concept could also be used -->
+                                        <!-- <button class="btn btn-outline-primary btn-sm mt-2" type="button">
+                                        Add to wishlist
+                                        </button> -->
+                                    </div>
+                                </div>
                             </div>
-                            </a>
-
-                        </div>
-                        </div>
-                        <div class="col-md-6 col-lg-6 col-xl-6 mt-2">
-                            
-                        <h5><%= product.name %></h5>
-                        <!-- <div class="d-flex flex-row">
-                            <div class="text-danger mb-1 me-2">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            </div>
-                            <span>310</span>
-                        </div>
-                        <div class="mt-1 mb-0 text-muted small">
-                            <span>100% cotton</span>
-                            <span class="text-primary"> • </span>
-                            <span>Light weight</span>
-                            <span class="text-primary"> • </span>
-                            <span>Best finish<br /></span>
-                        </div>
-                        <div class="mb-2 text-muted small">
-                            <span>Unique design</span>
-                            <span class="text-primary"> • </span>
-                            <span>For men</span>
-                            <span class="text-primary"> • </span>
-                            <span>Casual<br /></span>
-                        </div> -->
-
-                        <div>
-
-                            <% ((product.auctionTime).toString()).split(" ").every(element => { %>
-                                <% if (element[0] !== "G"){ %>
-                                    <span><strong><%= element %></strong></span>
-                                    <% return true %>
-                                <% }else{ %>
-                                    <% return false %>
-                                <% } %>
-                            <% }); %>
-                            <!-- <span><%= product.auctionTime %></span> -->
-                        </div>
-
-                        <p class="text-truncate mb-4 mb-md-0">
-                            <%= product.description %>
-                        </p>
-                        </div>
-                        <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start my-3">
-                        <div class="d-flex flex-row align-items-center mb-1">
-                            <h4 class="mb-1 me-1"> &#8377; <%= product.price %></h4>
-                            <!-- <span class="text-danger"><s>$20.99</s></span> -->
-                        </div>
-
-                        <h6 class="text-success">Free shipping</h6>
-
-                        <div class="d-flex flex-column mt-4">
-                            <a href="/productDetails/<%= user %>/<%= product.id %>">
-                                <button class="btn btn-primary w-100 mt-4" type="button">
-                                    Details
-                                </button>
-                            </a>
-                            <% if(user === "seller"){ %>
-
-                                <form action="/home/<%= user %>/<%= seller.id %>" method="post">
-                                    <input type="hidden" name="productId" value="<%= product.id %>">
-                                    <button type="submit" class="btn btn-danger my-2 w-100 ">Delete Product</button>
-                                </form>
-
-                            <% } %>
-
-                            <!-- wishlist concept could also be used -->
-                            <!-- <button class="btn btn-outline-primary btn-sm mt-2" type="button">
-                            Add to wishlist
-                            </button> -->
-                        </div>
-                        </div>
+                        </div>                    
                     </div>
-                    </div>
-                    
-                    
-                    
-                    
                 </div>
             </div>
         </div>
-    </div>
-    <% }); %>
+        <% }); %>
     </section>
+
+    <script>
+
+        const auctionDateElementArr = document.getElementsByClassName("auctionDate");
+
+        const D = document.getElementsByClassName("D");
+        const H = document.getElementsByClassName("H");
+        const M = document.getElementsByClassName("M");
+        const S = document.getElementsByClassName("S");
+
+
+        const auctionDateArr = [];
+
+        for (let i = 0; i < auctionDateElementArr.length; i++) {
+            auctionDateArr.push(Math.floor(auctionDateElementArr[i].value / 1000));
+        }
+
+        setInterval(() => {
+            for (let i = 0; i < auctionDateArr.length; i++) {
+                D[i].innerText = Math.floor(auctionDateArr[i]/(60*60*24));
+                H[i].innerText = Math.floor((auctionDateArr[i]/(60*60)) - (Math.floor(auctionDateArr[i]/(60*60*24))*24));
+                M[i].innerText = Math.floor((auctionDateArr[i]/60) - (Math.floor((auctionDateArr[i]/(60*60)))*60));
+                S[i].innerText = Math.floor(auctionDateArr[i] - (Math.floor(auctionDateArr[i]/60)*60));
+                auctionDateArr[i] = auctionDateArr[i]-1;
+            }
+        }, 1000);
+        
+    </script>
 
 <%- include("partials/footer"); -%>

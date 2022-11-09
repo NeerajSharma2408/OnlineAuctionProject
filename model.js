@@ -14,6 +14,10 @@ const productSchema = new mongoose.Schema({
     sold: {
         type: Boolean,
         default: false
+    },
+    bidPrice: {
+        type: mongoose.Decimal128,
+        default: 0.0
     }
 });
 

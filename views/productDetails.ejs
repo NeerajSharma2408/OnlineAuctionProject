@@ -35,7 +35,8 @@
                 <div class="d-flex justify-content-between">
                     <p><a href="#!" class="text-dark"><%= product.price %></a></p>
                 </div>
-                <p class="small text-muted">
+                <p class=" text-muted">
+                    <span><strong>Auction Date: </strong></span>
                     <% ((product.auctionTime).toString()).split(" ").every(element => { %>
                         <% if (element[0] !== "G"){ %>
                             <span><strong><%= element %></strong></span>
@@ -45,6 +46,18 @@
                         <% } %>
                     <% }); %>
                 </p>
+                <div class="my-4">
+                    <div class="d-none">
+                        <input type="hidden" id="auctionDate" value="<%= product.auctionTime - Date.now() %>">
+                    </div>
+                        <span><strong>Time Left:</strong>
+                            <span id="D"><strong></strong></span><span>D :</span>
+                            <span id="H"><strong></strong></span><span>H :</span>
+                            <span id="M"><strong></strong></span><span>M :</span>
+                            <span id="S"><strong></strong></span><span>S</span>
+                        </span> 
+                        
+                </div>
                 </div>
                 <hr class="my-0" />
                 <div class="card-body"> 
@@ -55,7 +68,11 @@
                     </form>
                     <!-- change bidding time button could be provided below for useer type of seller -->
                     <% if(user === "buyer"){ %>
-                        <button type="button" class="btn btn-primary">(start bidding button)Buy now</button>
+                        <a href="/auctionPage/<%= userId %>/<%= product.id %>" style="text-decoration: none; color: white;"><button
+                            <% if((product.auctionTime - Date.now()) < 0 ){ %>
+                                disabled
+                            <% } %>
+                            type="button" class="btn btn-primary">(start bidding button)Buy now</button></a>
                     <% } %>
                 </div>
                 </div>
@@ -64,5 +81,29 @@
         </div>
         </div>
     </section>
+
+    <script>
+
+        var auctionTime = Math.floor(document.getElementById("auctionDate").value / 1000);
+        console.log(auctionTime);
+        
+        const D = document.getElementById("D");
+        const H = document.getElementById("H");
+        const M = document.getElementById("M");
+        const S = document.getElementById("S");
+
+        setInterval(() => {
+
+            D.innerText = Math.floor(auctionTime/(60*60*24));
+
+            H.innerText = Math.floor((auctionTime/(60*60)) - (Math.floor(auctionTime/(60*60*24))*24));
+
+            M.innerText = Math.floor((auctionTime/60) - (Math.floor((auctionTime/(60*60)))*60));
+
+            S.innerText = Math.floor(auctionTime - (Math.floor(auctionTime/60)*60));
+            auctionTime = auctionTime-1;
+
+        }, 1000);
+    </script>
 
 <%- include("partials/footer"); -%>

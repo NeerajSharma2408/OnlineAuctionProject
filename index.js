@@ -8,9 +8,12 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv/config');
 
+// socket io coding for auction page codes
+
 const app = express();
 
-
+const server = require('http').createServer(app)
+const io = require("socket.io")(server,{cors: {origin: '*'}});
 
 // mongoose.connect("mongodb://127.0.0.1:27017/onlineauctionDB", {useNewUrlParser: true, useUnifiedTopology: true})
 // .then( ()=> console.log("connection successful...") )
@@ -35,6 +38,8 @@ app.use(express.static("public"));
 
 
 
+
+
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads')
@@ -49,6 +54,7 @@ var upload = multer({ storage: storage });
 
 
 var product = require('./model');
+const { create } = require("domain");
 
 
 
@@ -264,7 +270,6 @@ app.get("/home/:userType/:userId",function(req,res){
             }
             else{
                 product.find({ '_id': { $in: seller.productsDisplayed } }, (err,products)=> {
-                // product.findByIds(seller.productsDisplayed, (err, products)=>{
                     if (err) {
                         console.log(err);
                     }
@@ -272,7 +277,7 @@ app.get("/home/:userType/:userId",function(req,res){
                         res.render('home.ejs',{user: user, products: products, userId: id, seller: seller});
                     }
                 });
-
+                // above give a batch element to tell that the auction time has been over
             }
         });
     }
@@ -282,30 +287,30 @@ app.get("/home/:userType/:userId",function(req,res){
                 console.log(err);
             }
             else{
-                product.find({}, (err,products)=> {
-                // product.findByIds(buyer.productsDisplayed, (err, products)=> {
-                    if (err) {
+
+                // below code could be used to display products whos auction dates have not been expired
+                product.find({auctionTime: { $gte: Date.now()}}, (err, products)=>{
+                    if(err){
                         console.log(err);
                     }
                     else{
                         res.render('home.ejs',{user: user, products: products, userId: id, buyer: buyer});
                     }
                 });
+                // product.find({}, (err,products)=> {
+                // // product.findByIds(buyer.productsDisplayed, (err, products)=> {
+                //     if (err) {
+                //         console.log(err);
+                //     }
+                //     else{
+                //         res.render('home.ejs',{user: user, products: products, userId: id, buyer: buyer});
+                //     }
+                // });
             }
         });
     }
 
-    // below code could be used to display products whos auction dates have not been expired
-    // product.find({auctionTime: { $gte: Date.now()}}, (err, products)=>{
-    //     if(err){
-    //         console.log(err);
-    //     }
-    //     else{
-    //         products.forEach(product =>{
-    //             console.log(product.auctionTime);
-    //         });
-    //     }
-    // });
+    
 
 });
 
@@ -408,7 +413,8 @@ app.post("/product/:userId", upload.single('productImage'), (req, res, next)=>{
             data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
             contentType: 'image/png'
         },
-        sold: false
+        sold: false,
+        bidPrice: productPrice
     }
     product.create(productObj, (err, item)=>{
         if (err) {
@@ -434,9 +440,10 @@ app.post("/product/:userId", upload.single('productImage'), (req, res, next)=>{
 
 
 // get mathod is made just for developing purpose otherwise a link from either home or any other place would be used to get to this page along with product object
-app.get("/productDetails/:userType/:productid", function(req,res){
+app.get("/productDetails/:userType/:userId/:productid", function(req,res){
     const pid = req.params.productid;
     const userType = req.params.userType;
+    const uid = req.params.userId;
 
 
     product.findById(pid, (err,product) => {
@@ -445,21 +452,110 @@ app.get("/productDetails/:userType/:productid", function(req,res){
             console.log(err);
         }
         else{
-            res.render('productDetails.ejs',{product: product, user: userType});
+            res.render('productDetails.ejs',{product: product, user: userType, userId: uid});
         }
     });
 })
 
-// app.get("/home/:userType/profile", function(req,res){
-//     res.render('profile.ejs');
-// });
+
+app.get("/auctionPage/:userId/:productId", (req,res)=>{
+
+    const userId = req.params.userId;
+    const productId = req.params.productId;
+    
+    product.findById(productId, (err,product)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+            Buyer.findById(userId, (err, buyer)=>{
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    res.render("auction.ejs",{userId: userId, buyer: buyer, product: product});
+                }
+            });
+        }
+    });
+});
+
+app.post("/auctionPage/:userId/:productId", (req,res)=>{
+
+    const userId = req.params.userId;
+    const productId = req.params.productId;
+    
+    
+    
+    product.findById(productId, (err,product)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+            Buyer.findById(userId, (err, buyer)=>{
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    res.render("auction.ejs",{userId: userId, buyer: buyer, product: product});
+                }
+            });
+        }
+    });
+    
+});
 
 
 
 const port = process.env.Port || '3000';
 
-app.listen(port, err => {
-	if (err)
-		throw err
+server.listen(port, err => {
+    if (err)
+    throw err
 	console.log('Server listening on port', port)
+})
+
+
+
+// socket codes
+
+const users = [];
+
+io.on('connection', socket=>{
+    // when a user joins
+    socket.on('new-user-joined', (userId, productId)=>{
+        // users[socket.id] = [userId,productId];
+        Buyer.findById(userId, (err,buyer)=>{
+            if (err) {
+                console.log(err);
+            }
+            else{
+                // to check whether id is leagl or not
+                // console.log(mongoose.Types.ObjectId.isValid(userId));
+                
+                users.push(buyer.id);
+                socket.join(productId);
+                socket.to(productId).emit('user-joined', buyer.name);
+            }
+        })
+    });
+
+    // when a bid is made
+    socket.on('bid', (buyerName, productPrice, productId)=>{
+        // users.push(userId);
+        socket.to(productId).emit('bidded', buyerName, productPrice)
+    });
+
+    // when a user leaves
+
+    // no need of bellow code ---
+    // socket.on('disconnect', userName=>{
+    //     console.log(userName);
+    //     // socket.broadcast.emit('left', userName);
+    // })
+
+    socket.on('user-disconnected', (buyerName, productId)=>{
+        console.log(buyerName);
+        socket.to(productId).emit('user-left', buyerName)
+    })
 })
