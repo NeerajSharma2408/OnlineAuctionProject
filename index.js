@@ -264,6 +264,7 @@ app.get("/home/:userType/:userId",function(req,res){
     const user = req.params.userType;
 
     if (user === "seller") {
+
         Seller.findById(id, (err, seller)=>{
             if(err){
                 console.log(err);
@@ -309,9 +310,6 @@ app.get("/home/:userType/:userId",function(req,res){
             }
         });
     }
-
-    
-
 });
 
 app.post("/home/:user/:userId", (req,res)=>{
@@ -353,24 +351,98 @@ app.get("/profile/:user/:userId", function(req,res){
     const id = req.params.userId;
 
     if (user === "seller") {
-        Seller.findById(id, (err,seller)=>{
+        // productsDisplayed
+        // totalMoneyEarned
+        // productsPurchased
+        // totalMoneySpent
+
+        var totalMoneyEarnedNow = 0;
+
+        Seller.findById(id, (err, seller)=>{
             if (err) {
-                console.log(err);
+                console.log(err)
             }
             else{
-                res.render("profile.ejs", {user: user, User: seller});
+                const productsD = seller.productsDisplayed;
+                product.find( {'_id': {$in : productsD}}, (err, products)=>{
+                    if (err) {
+                        console.log(err)
+                    }
+                    else{
+                            for (let i = 0; i < products.length; i++) {
+                                const element = Number(products[i].bidPrice);
+                                // console.log(totalMoneyEarnedNow)
+                                totalMoneyEarnedNow = totalMoneyEarnedNow + element;
+                            }
+                            // console.log(totalMoneyEarnedNow);
+                            Seller.findByIdAndUpdate(id, { totalMoneyEarned: totalMoneyEarnedNow}, (err, seller)=>{
+                                if (err) {
+                                    console.log(err)
+                                }else{
+                                    res.render("profile.ejs", {user: user, User: seller});
+                                }
+                            });
+                        }
+                    }
+                );
             }
         });
+
+        // Seller.findById(id, (err,seller)=>{
+        //     if (err) {
+        //         console.log(err);
+        //     }
+        //     else{
+        //         res.render("profile.ejs", {user: user, User: seller});
+        //     }
+        // });
+
     }
     else{
-        Buyer.findById(id, (err,buyer)=>{
+
+        var totalMoneySpentNow = 0;
+
+        Buyer.findById(id, (err, buyer)=>{
             if (err) {
-                console.log(err);
+                console.log(err)
             }
             else{
-                res.render("profile.ejs", {user: user, User: buyer});
+                const productsP = buyer.productsPurchased
+                // console.log(productsP)
+                product.find( {'_id': {$in : productsP}}, (err, products)=>{
+                    if (err) {
+                        console.log(err)
+                    }
+                    else{
+                        // console.log(products.length)
+                        for (let i = 0; i < products.length; i++) {
+                            const element = Number(products[i].bidPrice);
+                            // console.log(totalMoneySpentNow)
+                            totalMoneySpentNow = totalMoneySpentNow + element;
+                        }
+                        // console.log(totalMoneySpentNow);
+                        Buyer.findByIdAndUpdate(id, {totalMoneySpent: totalMoneySpentNow}, (err, buyer)=>{
+                            if (err) {
+                                console.log(err);
+                            }
+                            else{
+                                // console.log(buyer);
+                                res.render("profile.ejs", {user: user, User: buyer});
+                            }
+                        });
+                    }
+                });
             }
         });
+
+        // Buyer.findById(id, (err,buyer)=>{
+        //     if (err) {
+        //         console.log(err);
+        //     }
+        //     else{
+        //         res.render("profile.ejs", {user: user, User: buyer});
+        //     }
+        // });
     }
 
 });
@@ -519,7 +591,7 @@ server.listen(port, err => {
 
 // socket codes
 
-const users = [];
+const userBidsInfo = {}
 
 io.on('connection', socket=>{
     // when a user joins
@@ -533,7 +605,7 @@ io.on('connection', socket=>{
                 // to check whether id is leagl or not
                 // console.log(mongoose.Types.ObjectId.isValid(userId));
                 
-                users.push(buyer.id);
+                // users.push(buyer.id);
                 socket.join(productId);
                 socket.to(productId).emit('user-joined', buyer.name);
             }
@@ -541,9 +613,41 @@ io.on('connection', socket=>{
     });
 
     // when a bid is made
-    socket.on('bid', (buyerName, productPrice, productId)=>{
-        // users.push(userId);
-        socket.to(productId).emit('bidded', buyerName, productPrice)
+    socket.on('bid', (buyerName, productPrice, productId, userId)=>{
+
+        if (userBidsInfo[productId]) {
+            Buyer.findByIdAndUpdate(userBidsInfo[productId], { $pull: { productsPurchased: productId } }, (err, buyer)=>{
+                if (err) {
+                    console.log(err)
+                }
+                else{
+                    console.log(buyer)
+                }
+            })
+        }
+        else{
+            userBidsInfo[productId] = userId
+        }
+
+        Buyer.findByIdAndUpdate(userId, { $push: {productsPurchased: productId} }, (err, buyer)=>{
+            if (err) {
+                console.log(err)
+            }
+            else{
+                console.log(buyer)
+            }
+        })
+
+        userBidsInfo[productId] = userId;
+        product.findByIdAndUpdate(productId, {sold: true, bidPrice: productPrice}, (err, product)=>{
+            if (err) {
+                console.log(err)
+            }
+            else{
+                // console.log(product)
+                socket.to(productId).emit('bidded', buyerName, productPrice)
+            }
+        })
     });
 
     // when a user leaves

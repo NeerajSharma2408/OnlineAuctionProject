@@ -144,7 +144,7 @@
                 bidDiv.innerText = `Current Product Bid: ${productPrice+bidIncrement}`;
                 productPrice = productPrice + bidIncrement;
                 userDiv.innerText = `You have raised the bid`
-                socket.emit('bid', buyerName, productPrice, productId);
+                socket.emit('bid', buyerName, productPrice, productId, userId);
             })
             
             
@@ -178,15 +178,6 @@
         }
 
         const interval = setInterval(()=>{
-            // if (auctionDate < 0) {
-            //     auctionDiv.style.display = "inline-block";
-            //     waitingDiv.style.display = "none";
-            //     intervalClear()
-            // }
-            // else{
-            //     auctionDiv.style.display = "none";
-            //     waitingDiv.style.display = "inline-block";
-            // }
 
             D.innerText = Math.floor(auctionTime/(60*60*24));
 
