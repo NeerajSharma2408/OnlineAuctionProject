@@ -34,6 +34,7 @@
             <input type="hidden" id="product" value="<%= product %>">
             <input type="hidden" id="productPrice" value="<%= product.price %>">
             <input type="hidden" id="productId" value="<%= product.id %>">
+            <input type="hidden" id="auctionDate" value="<%= product.auctionTime - Date.now() %>">
         </div>
         <div style="display: flex;">
             <div class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
@@ -64,12 +65,24 @@
             <form action="" method="post">
                 <!-- /auctionPage/<%= buyer.id %>/<%= product.id %> -->
                 <div class="container d-flex">
-                    <button type="submit" class="btn btn-primary btn-lg mx-auto mt-3" id="raiseBid">Raise Bid by <%= (product.price * 0.1) %></button>
-                    <a class="btn btn-primary btn-lg mx-auto mt-3" href="/productDetails/buyer/<%= userId %>/<%= product.id %>" id="leave">
-                        Leave
-                        <!-- <button type="submit" class="btn btn-primary btn-lg mx-auto mt-3" id="leave">Leave</button> -->
-                        <!-- onclick="window.history.back(); return false;" -->
-                    </a>
+
+                    <div style="display: none; margin: auto;" id="waiting-div">
+                        <div class="d-none">
+                            <input type="hidden" id="auctionDate" value="<%= product.auctionTime - Date.now() %>">
+                        </div>
+                            <span><strong>Auction will Start in: </strong>
+                                <span id="D"><strong></strong></span><span>D :</span>
+                                <span id="H"><strong></strong></span><span>H :</span>
+                                <span id="M"><strong></strong></span><span>M :</span>
+                                <span id="S"><strong></strong></span><span>S</span>
+                            </span> 
+                    </div>
+                    <div style="display: none; margin: auto;" id="button-div">
+                        <button type="submit" class="btn btn-primary btn-lg mx-auto mt-3" id="raiseBid">Raise Bid by <%= (product.price * 0.1) %></button>
+                        <a class="btn btn-primary btn-lg mx-auto mt-3" href="/productDetails/buyer/<%= userId %>/<%= product.id %>" id="leave">
+                            Leave
+                        </a>
+                    </div>
                 </div>
             </form>
         </p>
@@ -121,24 +134,81 @@
         // user joined code:
         socket.emit('new-user-joined',userId, productId)
         
-        // user bidding code
-        const bidButton = document.getElementById("raiseBid");
 
-        bidButton.addEventListener('click',(e)=>{
-            e.preventDefault()
-            bidDiv.innerText = `Current Product Bid: ${productPrice+bidIncrement}`;
-            productPrice = productPrice + bidIncrement;
-            userDiv.innerText = `You have raised the bid`
-            socket.emit('bid', buyerName, productPrice, productId);
-        })
 
-        // user left code
-        const leaveButton = document.getElementById("leave");
+            // user bidding code
+            const bidButton = document.getElementById("raiseBid");
+            
+            bidButton.addEventListener('click',(e)=>{
+                e.preventDefault()
+                bidDiv.innerText = `Current Product Bid: ${productPrice+bidIncrement}`;
+                productPrice = productPrice + bidIncrement;
+                userDiv.innerText = `You have raised the bid`
+                socket.emit('bid', buyerName, productPrice, productId);
+            })
+            
+            
+            
+            // user left code
+            const leaveButton = document.getElementById("leave");
+            
+            leaveButton.addEventListener('click',(e)=>{
+                socket.emit('user-disconnected',buyerName, productId)
+                socket.disconnect();
+            })
+        
 
-        leaveButton.addEventListener('click',(e)=>{
-            socket.emit('user-disconnected',buyerName, productId)
-            socket.disconnect();
-        })
+
+
+        var auctionTime = Math.floor(document.getElementById("auctionDate").value / 1000);
+        console.log(auctionTime);
+        
+        const D = document.getElementById("D");
+        const H = document.getElementById("H");
+        const M = document.getElementById("M");
+        const S = document.getElementById("S");
+
+        const waitingDiv = document.getElementById("waiting-div");
+        const auctionDiv = document.getElementById("button-div");
+
+
+
+        function intervalClear(){
+            clearInterval(interval);
+        }
+
+        const interval = setInterval(()=>{
+            // if (auctionDate < 0) {
+            //     auctionDiv.style.display = "inline-block";
+            //     waitingDiv.style.display = "none";
+            //     intervalClear()
+            // }
+            // else{
+            //     auctionDiv.style.display = "none";
+            //     waitingDiv.style.display = "inline-block";
+            // }
+
+            D.innerText = Math.floor(auctionTime/(60*60*24));
+
+            H.innerText = Math.floor((auctionTime/(60*60)) - (Math.floor(auctionTime/(60*60*24))*24));
+
+            M.innerText = Math.floor((auctionTime/60) - (Math.floor((auctionTime/(60*60)))*60));
+
+            S.innerText = Math.floor(auctionTime - (Math.floor(auctionTime/60)*60));
+
+            if (auctionTime > 0) {
+                auctionTime = auctionTime-1;
+                auctionDiv.style.display = "none";
+                waitingDiv.style.display = "inline-block";
+            }else{
+                auctionDiv.style.display = "inline-block";
+                waitingDiv.style.display = "none";
+                intervalClear()
+            }
+
+        },1000);
+
+
 
     </script>
 

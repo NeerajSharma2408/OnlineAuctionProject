@@ -5,26 +5,27 @@
     <!-- for showing a single product details -->
     <div>
 
-        <form action="/product/<%= userId %>" method="post" enctype="multipart/form-data">
+        <form action="/product/<%= userId %>" method="post" enctype="multipart/form-data" id="form-container">
 
             <div>
-                <input type="text" name="productTitle" id="productTitle" placeholder="Enter Product Title" autocomplete="off" required>
+                <input type="text" name="productTitle" id="productTitle" placeholder="Enter Product Title" autocomplete="off" required class="input-field">
             </div>
             <div>
-                <input type="textarea" name="productDescription" id="productDescription" placeholder="Enter Product Description" autocomplete="off" required>
+                <textarea name="productDescription" id="productDescription" cols="35" rows="5"
+                placeholder="Enter Product Description" autocomplete="off" required class="input-field"></textarea>
             </div>
             <div>
-                <input type="number" min="1" step="any" name="productPrice" id="productPrice" placeholder="Enter Product Price" autocomplete="off" required/>
+                <input type="number" min="1" step="any" name="productPrice" id="productPrice" placeholder="Enter Product Price" autocomplete="off" required class="input-field"/>
             </div>
             <div>
-                <input type="file" name="productImage" id="productImage" accept=".jpg, .jpeg, .png" required>
+                <input type="file" name="productImage" id="productImage" accept=".jpg, .jpeg, .png" required class="input-field">
             </div>
             <div>
                 <input type="datetime-local" name="auctionTime" id="auctionTime"
-                value= <%= date %> min="2022-10-28T00:00">
+                value= <%= date %> min="2022-10-28T00:00" class="input-field">
             </div>
             <div>
-                <button type="submit">SUBMIT</button>
+                <button class="btn  btn-success" type="submit">SUBMIT</button>
             </div>
 
         </form>

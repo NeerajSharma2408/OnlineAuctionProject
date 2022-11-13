@@ -68,11 +68,8 @@
                     </form>
                     <!-- change bidding time button could be provided below for useer type of seller -->
                     <% if(user === "buyer"){ %>
-                        <a href="/auctionPage/<%= userId %>/<%= product.id %>" style="text-decoration: none; color: white;"><button
-                            <% if((product.auctionTime - Date.now()) < 0 ){ %>
-                                disabled
-                            <% } %>
-                            type="button" class="btn btn-primary">(start bidding button)Buy now</button></a>
+                        <a href="/auctionPage/<%= userId %>/<%= product.id %>" style="text-decoration: none; color: white;"><button 
+                            type="button" id="biddingBtn" class="btn btn-primary">(start bidding button)Buy now</button></a>
                     <% } %>
                 </div>
                 </div>
@@ -92,7 +89,16 @@
         const M = document.getElementById("M");
         const S = document.getElementById("S");
 
-        setInterval(() => {
+
+
+        function ClearInterVal() {
+            clearInterval(interval)
+        }
+        const interval = setInterval(() => {
+
+            if (auctionTime < 0) {
+                ClearInterVal()
+            }
 
             D.innerText = Math.floor(auctionTime/(60*60*24));
 
@@ -101,7 +107,17 @@
             M.innerText = Math.floor((auctionTime/60) - (Math.floor((auctionTime/(60*60)))*60));
 
             S.innerText = Math.floor(auctionTime - (Math.floor(auctionTime/60)*60));
-            auctionTime = auctionTime-1;
+
+            if (auctionTime > 0) {
+                auctionTime = auctionTime-1;
+            }else{
+                D.innerText = "0";
+                H.innerText = "0";
+                M.innerText = "0";
+                S.innerText = "0";
+                const BB = document.getElementById("biddingBtn");
+                BB.disabled = true;
+            }
 
         }, 1000);
     </script>

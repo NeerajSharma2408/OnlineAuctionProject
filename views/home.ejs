@@ -197,13 +197,22 @@
             auctionDateArr.push(Math.floor(auctionDateElementArr[i].value / 1000));
         }
 
+
         setInterval(() => {
             for (let i = 0; i < auctionDateArr.length; i++) {
                 D[i].innerText = Math.floor(auctionDateArr[i]/(60*60*24));
                 H[i].innerText = Math.floor((auctionDateArr[i]/(60*60)) - (Math.floor(auctionDateArr[i]/(60*60*24))*24));
                 M[i].innerText = Math.floor((auctionDateArr[i]/60) - (Math.floor((auctionDateArr[i]/(60*60)))*60));
                 S[i].innerText = Math.floor(auctionDateArr[i] - (Math.floor(auctionDateArr[i]/60)*60));
-                auctionDateArr[i] = auctionDateArr[i]-1;
+                
+                if (auctionDateArr[i] > 0) {
+                    auctionDateArr[i] = auctionDateArr[i]-1;
+                }else{
+                    D[i].innerText = "0";
+                    H[i].innerText = "0";
+                    M[i].innerText = "0";
+                    S[i].innerText = "0";
+                }
             }
         }, 1000);
         

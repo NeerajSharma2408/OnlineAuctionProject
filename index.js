@@ -129,7 +129,7 @@ app.post("/signup", function(req,res){
           ]}
         )
         .then( function ( sellers) {
-                console.log(sellers);
+                // console.log(sellers);
 
                 if (sellers.length === 0) {
                     console.log("array empty");
@@ -172,7 +172,7 @@ app.post("/signup", function(req,res){
             { email: userEmail }
           ]})
         .then( function ( buyers) {
-            console.log(buyers);
+            // console.log(buyers);
             if (buyers.length === 0) {
                 console.log("array empty");
                 const buyers = new Buyer ({
@@ -319,7 +319,7 @@ app.post("/home/:user/:userId", (req,res)=>{
     const productId = req.body.productId;
     const userId = req.params.userId;
 
-    console.log(productId);
+    // console.log(productId);
     // const seller = Seller.findByIdAndUpdate(userId, { $pull: { productsDisplayed: productId } });
     // console.log(seller);
     Seller.findById(userId, (err, seller)=>{
@@ -328,7 +328,7 @@ app.post("/home/:user/:userId", (req,res)=>{
         }
         else{
             seller.productsDisplayed.pull(productId);
-            console.log(seller);
+            // console.log(seller);
             seller.save();
         }
     });
@@ -337,9 +337,9 @@ app.post("/home/:user/:userId", (req,res)=>{
         if (err) {
             console.log(err);
         }
-        else{
-            console.log(product);
-        }
+        // else{
+        //     // console.log(product);
+        // }
     });
 
     res.redirect('/home/seller/' + userId);
@@ -388,7 +388,7 @@ app.get("/product/:userId", function(req,res){
     var time = date.toLocaleTimeString('en-GB').slice(0,5);
 
     var formattedDate =year + "-" + month + "-" + day + "T" + time;
-    console.log(formattedDate);
+    // console.log(formattedDate);
 
 
 
@@ -403,7 +403,7 @@ app.post("/product/:userId", upload.single('productImage'), (req, res, next)=>{
     const auctionTime = req.body.auctionTime;
     const id = req.params.userId;
 
-    console.log(req.file);
+    // console.log(req.file);
     var productObj = {
         name: productTitle,
         description: productDescription,
@@ -426,7 +426,7 @@ app.post("/product/:userId", upload.single('productImage'), (req, res, next)=>{
             { "new": true, "upsert": true },
             function (err, managerparent) {
                 if (err) throw err;
-                console.log(managerparent);
+                // console.log(managerparent);
             }
             );
 
