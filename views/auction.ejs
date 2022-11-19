@@ -70,16 +70,29 @@
                         <div class="d-none">
                             <input type="hidden" id="auctionDate" value="<%= product.auctionTime - Date.now() %>">
                         </div>
-                            <span><strong>Auction will Start in: </strong>
-                                <span id="D"><strong></strong></span><span>D :</span>
-                                <span id="H"><strong></strong></span><span>H :</span>
-                                <span id="M"><strong></strong></span><span>M :</span>
-                                <span id="S"><strong></strong></span><span>S</span>
-                            </span> 
+                        <div class="d-flex">
+                            <div class="my-auto">
+                                <span><strong>Auction will Start in: </strong>
+                                    <span id="D"><strong></strong></span><span>D :</span>
+                                    <span id="H"><strong></strong></span><span>H :</span>
+                                    <span id="M"><strong></strong></span><span>M :</span>
+                                    <span id="S"><strong></strong></span><span>S</span>
+                                </span> 
+                            </div>
+                            <div>
+                                <input class="btn btn-danger mx-4" type="button" value="Go Back" onclick="history.back() ">
+                            </div>
+                        </div>
                     </div>
                     <div style="display: none; margin: auto;" id="button-div">
-                        <button type="submit" class="btn btn-primary btn-lg mx-auto mt-3" id="raiseBid">Raise Bid by <%= (product.price * 0.1) %></button>
-                        <a class="btn btn-primary btn-lg mx-auto mt-3" href="/productDetails/buyer/<%= userId %>/<%= product.id %>" id="leave">
+                        <div class="mx-3 my-auto">
+                            <span><strong>Auction will End in: </strong>
+                                <span id="Mins"><strong></strong></span><span>M :</span>
+                                <span id="Secs"><strong></strong></span><span>S</span>
+                            </span> 
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg mx-3" id="raiseBid">Raise Bid by <%= (product.price * 0.1) %></button>
+                        <a class="btn btn-primary btn-lg mx-3" href="/productDetails/buyer/<%= userId %>/<%= product.id %>" id="leave">
                             Leave
                         </a>
                     </div>
@@ -130,6 +143,11 @@
         socket.on('user-left', UserName=>{
             userDiv.innerText = `${UserName} have Left`
         })
+
+        socket.on("auction-closed", ()=>{
+            document.getElementById("raiseBid").disabled = true;
+            document.getElementById("leave").click()
+        })
         
         // user joined code:
         socket.emit('new-user-joined',userId, productId)
@@ -173,8 +191,29 @@
 
 
 
+        const mins = document.getElementById("Mins");        
+        const secs = document.getElementById("Secs"); 
+        // bidding secs ---
+        let BiddingTime = 30; 
+
         function intervalClear(){
             clearInterval(interval);
+            console.log(BiddingTime);
+
+            auctionTime = BiddingTime;
+            const auctionInterval = setInterval(()=>{
+
+                mins.innerText = Math.floor(auctionTime/60);
+                secs.innerText = Math.floor(auctionTime - (Math.floor(auctionTime/60))*60);
+
+                if (auctionTime > 0) {
+                    auctionTime = auctionTime - 1
+                }else{
+                    socket.emit("auction-time-over", productId)
+                }
+                
+            },1000);
+
         }
 
         const interval = setInterval(()=>{
@@ -192,7 +231,7 @@
                 auctionDiv.style.display = "none";
                 waitingDiv.style.display = "inline-block";
             }else{
-                auctionDiv.style.display = "inline-block";
+                auctionDiv.style.display = "flex";
                 waitingDiv.style.display = "none";
                 intervalClear()
             }

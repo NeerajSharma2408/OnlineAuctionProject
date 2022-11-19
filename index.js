@@ -662,4 +662,9 @@ io.on('connection', socket=>{
         console.log(buyerName);
         socket.to(productId).emit('user-left', buyerName)
     })
+
+    socket.on("auction-time-over", (productId)=>{
+        io.in(productId).emit("auction-closed");
+        socket.disconnect();
+    })
 })
