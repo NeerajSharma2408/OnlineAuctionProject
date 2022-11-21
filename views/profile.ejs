@@ -55,8 +55,10 @@
                             <p class="mb-2 h5"><%= User.productsDisplayed.length %></p>
                             <p class="text-muted mb-0">Products Displayed</p>
                         <% }else{ %>
-                            <p class="mb-2 h5"><%= User.productsPurchased.length %></p>
-                            <p class="text-muted mb-0">Products Purchased</p>
+                            <a href="/home/buyer/<%=User._id%>/productsPurchased" style="text-decoration: none; color: black;">
+                              <p class="mb-2 h5"><%= User.productsPurchased.length %></p>
+                              <p class="text-muted mb-0">Products Purchased</p>
+                            </a>
                         <% } %>
                     </div>
                   </div>

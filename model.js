@@ -18,6 +18,10 @@ const productSchema = new mongoose.Schema({
     bidPrice: {
         type: mongoose.Decimal128,
         default: 0.0
+    },
+    soldTo: {
+        type: String,
+        default: ""
     }
 });
 

@@ -312,6 +312,30 @@ app.get("/home/:userType/:userId",function(req,res){
     }
 });
 
+app.get("/home/buyer/:userId/productsPurchased", (req,res)=>{
+
+    const id = req.params.userId;
+
+    Buyer.findById(id, (err, buyer)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+
+            // below code could be used to display products whos auction dates have not been expired
+            product.find({'_id' : { $in : buyer.productsPurchased}}, (err, products)=>{
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    res.render('home.ejs',{user: buyer, products: products, userId: id, buyer: buyer});
+                }
+            });
+        }
+    });
+
+});
+
 app.post("/home/:user/:userId", (req,res)=>{
 
     const productId = req.body.productId;
@@ -635,19 +659,20 @@ io.on('connection', socket=>{
             }
             else{
                 console.log(buyer)
+                userBidsInfo[productId] = userId;
+                product.findByIdAndUpdate(productId, {sold: true, bidPrice: productPrice, soldTo: buyer.name}, (err, product)=>{
+                    if (err) {
+                        console.log(err)
+                    }
+                    else{
+                        // console.log(product)
+                        socket.to(productId).emit('bidded', buyerName, productPrice)
+                    }
+                });
             }
         })
 
-        userBidsInfo[productId] = userId;
-        product.findByIdAndUpdate(productId, {sold: true, bidPrice: productPrice}, (err, product)=>{
-            if (err) {
-                console.log(err)
-            }
-            else{
-                // console.log(product)
-                socket.to(productId).emit('bidded', buyerName, productPrice)
-            }
-        })
+
     });
 
     // when a user leaves

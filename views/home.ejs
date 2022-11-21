@@ -53,7 +53,14 @@
             <% } %>
         </div>
 
-        
+        <% if(products.length > 0 && products[0].sold === true && user === "buyer"){ %>
+            <div class="m-auto">
+                <p class="px-4 m-auto text-center"><strong>Following are the products that you have bought.</strong></p>
+            </div>
+        <% }else{ %>
+
+        <% } %>
+
         <% products.forEach(product => { %>
             <div class="container py-5">
                 <div class="row justify-content-center">
@@ -64,8 +71,12 @@
                             <div class="card-body my-0">
 
                                 <% if(product.sold === true){ %>
-                                    <span class="badge badge-danger <%= product.sold %>">SOLD</span>                                    
-                                <% }else if( (product.auctionTime - Date.now()) < 0 ){ %>
+                                    <% if(user === "seller"){ %>
+                                        <span class="badge badge-danger <%= product.sold %>">SOLD TO <%= product.soldTo %></span>                                    
+                                    <% }else{ %>
+                                        <span class="badge badge-danger <%= product.sold %>">SOLD</span>                                    
+                                    <% } %>
+                                 <% }else if( (product.auctionTime - Date.now()) < 0 ){ %>
                                     <span class="badge badge-danger true">NOT SOLD</span>
                                 <% }else{ %>
                                     <span class="badge badge-danger <%= product.sold %>">SOLD</span>                                 
@@ -151,7 +162,11 @@
                                 </div>
                                 <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start my-3">
                                     <div class="d-flex flex-row align-items-center mb-1">
-                                        <h4 class="mb-1 me-1"> &#8377; <%= product.price %></h4>
+                                        <% if(product.sold === true){ %>
+                                            <h4 class="mb-1 me-1"> &#8377; <%= product.bidPrice %></h4>
+                                        <% }else{ %>
+                                            <h4 class="mb-1 me-1"> &#8377; <%= product.price %></h4>
+                                        <% } %>
                                         <!-- <span class="text-danger"><s>$20.99</s></span> -->
                                     </div>
 
