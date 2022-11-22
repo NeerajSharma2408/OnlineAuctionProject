@@ -66,18 +66,18 @@ const buyerSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
-    priceLimit: {
-        productKey: {
-            type: mongoose.Decimal128,
-            default: 0.0
-        },
-    },
-    priceIncrement: {
-        productKey: {
-            type: mongoose.Decimal128,
-            default: 0.0
-        },
-    },
+    // priceLimit: {
+    //     productKey: {
+    //         type: mongoose.Decimal128,
+    //         default: 0.0
+    //     },
+    // },
+    // priceIncrement: {
+    //     productKey: {
+    //         type: mongoose.Decimal128,
+    //         default: 0.0
+    //     },
+    // },
     totalMoneySpent: {
         type: mongoose.Decimal128,
         default: 0.0
